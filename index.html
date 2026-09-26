@@ -128,7 +128,7 @@
   </div>
   <div class="footer">MUSTANG CHEER • BLUE & GOLD • THANK YOU FOR SUPPORTING OUR TEAM! 💙💛</div>
 </div>
-
+<div class="grid" id="grid"></div>
 <script>
 const amounts = [
   ...Array(10).fill(10),
@@ -140,121 +140,151 @@ const amounts = [
   ...Array(3).fill(60)
 ];
 
-let claims = JSON.parse(localStorage.getItem("mustangCheerClaims") || "{}");
-const SHEET_ID = "1C5gevT5naR2K6T8TL9To87rEJwQS8-FYA7-4SM46Ol0";
-const SHEET_GID = "0";
-const GOAL = 1000;
 const API_URL = "https://script.google.com/macros/s/AKfycbxeoahLoHztaGKIEE9LmQAp6ag4V0X0AE8CaYb-2ppcdDINSNf1rqlhYLml3cCG8IDF/exec";
-async function loadPaidTotal() {
-  try {
-    const url =
-      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${SHEET_GID}&tq=` +
-      encodeURIComponent("select sum(B) where C = 'Paid'");
 
-    const response = await fetch(url);
-    const text = await response.text();
+const GOAL = 1000;
 
-    const json = JSON.parse(text.substring(47).slice(0, -2));
-    const paid = Number(json.table.rows[0]?.c[0]?.v || 0);
-    const remaining = Math.max(GOAL - paid, 0);
+let claims = JSON.parse(
+  localStorage.getItem("mustangCheerClaims") || "{}"
+);
 
-    document.getElementById("raised").textContent =
-      `$${paid.toLocaleString()} paid`;
+function render() {
+  const grid = document.getElementById("grid");
 
-    document.getElementById("remaining").textContent =
-      `$${remaining.toLocaleString()} remaining`;
+  if (!grid) return;
 
-  } catch (error) {
-    console.error("Could not load paid total:", error);
-  }
+  grid.innerHTML = "";
+
+  amounts.forEach((amt, i) => {
+    const claim = claims[i];
+
+    const b = document.createElement("button");
+
+    b.className = "spot" + (claim ? " claimed" : "");
+
+    b.type = "button";
+
+    b.innerHTML = `
+      <div class="amount">$${amt}</div>
+      <div class="name">
+        ${claim ? escapeHtml(claim) : "Click to claim"}
+      </div>
+      ${
+        claim
+          ? '<div class="paid">CLAIMED ✓</div>'
+          : '<div class="paid">OPEN</div>'
+      }
+    `;
+
+    b.onclick = () => claimSpot(i, amt);
+
+    grid.appendChild(b);
+  });
+
+  updateTotal();
 }
 
-function render(){
-  const grid=document.getElementById("grid");
-  grid.innerHTML="";
-  let raised=0;
-  amounts.forEach((amt,i)=>{
-    const claim=claims[i];
-    const b=document.createElement("button");
-    b.className="spot"+(claim?" claimed":"");
-    b.type="button";
-    b.innerHTML=`<div class="amount">$${amt}</div>
-                 <div class="name">${claim ? escapeHtml(claim) : "Click to claim"}</div>
-                 ${claim ? '<div class="paid">CLAIMED ✓</div>' : '<div class="paid">OPEN</div>'}`;
-    b.onclick=()=>claimSpot(i,amt);
-    grid.appendChild(b);
-    if(claim) raised+=amt;
+function updateTotal() {
+  let raised = 0;
+
+  amounts.forEach((amt, i) => {
+    if (claims[i]) {
+      raised += amt;
+    }
   });
- loadPaidTotal();}
-async function claimSpot(i,amt){
-  if(claims[i]){
-    if(confirm(`This $${amt} spot is claimed by ${claims[i]}. Remove it?`)){
+
+  const remaining = Math.max(GOAL - raised, 0);
+
+  document.getElementById("raised").textContent =
+    `$${raised.toLocaleString()} raised`;
+
+  document.getElementById("remaining").textContent =
+    `$${remaining.toLocaleString()} remaining`;
+}
+
+function claimSpot(i, amt) {
+
+  if (claims[i]) {
+
+    if (
+      confirm(
+        `This $${amt} spot is claimed by ${claims[i]}. Remove it?`
+      )
+    ) {
       delete claims[i];
       save();
     }
+
     return;
   }
 
-  const name=prompt(`You selected a $${amt} donation. Enter your name:`);
+  const name = prompt(
+    `You selected a $${amt} donation. Enter your name:`
+  );
 
-  if(!name || !name.trim()) return;
+  if (name && name.trim()) {
 
-  try {
-    const response = await fetch(API_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-      },
-      body: JSON.stringify({
-        name: name.trim(),
-        amount: amt
-      })
-    });
+    claims[i] = name.trim();
 
-    const result = await response.json();
-
-    if(!result.success){
-      alert("We couldn't save your donation. Please try again.");
-      return;
-    }
-
-    claims[i]=name.trim();
     save();
 
-    const go=confirm(
+    const go = confirm(
       `Thank you, ${name.trim()}! Click OK to open Cash App and send $${amt} to $Mrskbowers.`
     );
 
-    if(go){
-      window.open("https://cash.app/$Mrskbowers","_blank");
+    if (go) {
+      window.open(
+        "https://cash.app/$Mrskbowers",
+        "_blank"
+      );
     }
-
-  } catch(error) {
-    console.error(error);
-    alert("There was a problem connecting to the fundraiser. Please try again.");
-  }
-}    return;
-  }
-  const name=prompt(`You selected a $${amt} donation. Enter your name:`);
-  if(name && name.trim()){
-    claims[i]=name.trim();
-    save();
-    const go=confirm(`Thank you, ${name.trim()}! Click OK to open Cash App and send $${amt} to $Mrskbowers.`);
-    if(go) window.open("https://cash.app/$Mrskbowers","_blank");
   }
 }
-function save(){
-  localStorage.setItem("mustangCheerClaims",JSON.stringify(claims));
+
+function save() {
+
+  localStorage.setItem(
+    "mustangCheerClaims",
+    JSON.stringify(claims)
+  );
+
   render();
 }
-function resetBoard(){
-  if(confirm("Reset all claimed spots on this device?")){
-    claims={};save();
+
+function resetBoard() {
+
+  if (
+    confirm(
+      "Reset all claimed spots on this device?"
+    )
+  ) {
+
+    claims = {};
+
+    localStorage.removeItem(
+      "mustangCheerClaims"
+    );
+
+    render();
   }
 }
-function escapeHtml(s){
-  return s.replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+
+function escapeHtml(s) {
+
+  return String(s).replace(
+    /[&<>"']/g,
+    function(m) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[m];
+    }
+  );
 }
+
 render();
 </script>
 </body>
