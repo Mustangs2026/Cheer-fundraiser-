@@ -141,6 +141,33 @@ const amounts = [
 ];
 
 let claims = JSON.parse(localStorage.getItem("mustangCheerClaims") || "{}");
+const SHEET_ID = "1C5gevT5naR2K6T8TL9To87rEJwQS8-FYA7-4SM46Ol0";
+const SHEET_GID = "0";
+const GOAL = 1000;
+const API_URL = "https://script.google.com/macros/s/AKfycbxeoahLoHztaGKIEE9LmQAp6ag4V0X0AE8CaYb-2ppcdDINSNf1rqlhYLml3cCG8IDF/exec";
+async function loadPaidTotal() {
+  try {
+    const url =
+      `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&gid=${SHEET_GID}&tq=` +
+      encodeURIComponent("select sum(B) where C = 'Paid'");
+
+    const response = await fetch(url);
+    const text = await response.text();
+
+    const json = JSON.parse(text.substring(47).slice(0, -2));
+    const paid = Number(json.table.rows[0]?.c[0]?.v || 0);
+    const remaining = Math.max(GOAL - paid, 0);
+
+    document.getElementById("raised").textContent =
+      `$${paid.toLocaleString()} paid`;
+
+    document.getElementById("remaining").textContent =
+      `$${remaining.toLocaleString()} remaining`;
+
+  } catch (error) {
+    console.error("Could not load paid total:", error);
+  }
+}
 
 function render(){
   const grid=document.getElementById("grid");
@@ -158,17 +185,55 @@ function render(){
     grid.appendChild(b);
     if(claim) raised+=amt;
   });
-  document.getElementById("raised").textContent=`$${raised.toLocaleString()} raised`;
-  document.getElementById("remaining").textContent=`$${(1000-raised).toLocaleString()} remaining`;
-  document.getElementById("fill").style.width=Math.min(100,raised/10)+"%";
-}
-function claimSpot(i,amt){
+ loadPaidTotal();}
+async function claimSpot(i,amt){
   if(claims[i]){
     if(confirm(`This $${amt} spot is claimed by ${claims[i]}. Remove it?`)){
       delete claims[i];
       save();
     }
     return;
+  }
+
+  const name=prompt(`You selected a $${amt} donation. Enter your name:`);
+
+  if(!name || !name.trim()) return;
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+      },
+      body: JSON.stringify({
+        name: name.trim(),
+        amount: amt
+      })
+    });
+
+    const result = await response.json();
+
+    if(!result.success){
+      alert("We couldn't save your donation. Please try again.");
+      return;
+    }
+
+    claims[i]=name.trim();
+    save();
+
+    const go=confirm(
+      `Thank you, ${name.trim()}! Click OK to open Cash App and send $${amt} to $Mrskbowers.`
+    );
+
+    if(go){
+      window.open("https://cash.app/$Mrskbowers","_blank");
+    }
+
+  } catch(error) {
+    console.error(error);
+    alert("There was a problem connecting to the fundraiser. Please try again.");
+  }
+}    return;
   }
   const name=prompt(`You selected a $${amt} donation. Enter your name:`);
   if(name && name.trim()){
