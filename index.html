@@ -3,133 +3,414 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Mustang Cheer $1,000 Fundraiser Bow</title>
+
 <style>
-  :root{
-    --navy:#071a3d;
-    --blue:#123b7a;
-    --gold:#f4c542;
-    --gold2:#ffd966;
-    --white:#fff;
-    --ink:#10213f;
-    --muted:#667085;
-    --green:#1f8f5f;
-  }
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family:Arial,Helvetica,sans-serif;
-    background:linear-gradient(135deg,#061633,#123b7a);
-    color:var(--ink);
-    min-height:100vh;
-  }
-  .wrap{max-width:1100px;margin:auto;padding:24px 16px 48px}
-  .card{
-    background:#fff;border-radius:24px;overflow:hidden;
-    box-shadow:0 18px 55px rgba(0,0,0,.28);
-  }
-  header{
-    background:linear-gradient(135deg,var(--navy),var(--blue));
-    color:#fff;text-align:center;padding:28px 20px 24px;
-    position:relative;
-  }
-  header:before,header:after{
-    content:"★";position:absolute;color:var(--gold);font-size:28px;top:24px;
-  }
-  header:before{left:24px} header:after{right:24px}
-  h1{margin:0;color:var(--gold);font-size:clamp(30px,6vw,52px);letter-spacing:1px}
-  .sub{font-size:18px;margin:8px 0 0}
-  .goal{font-weight:800;margin-top:14px;font-size:22px}
-  .progress-area{padding:22px 24px 10px}
-  .progress-row{display:flex;justify-content:space-between;font-weight:800;margin-bottom:8px}
-  .bar{height:20px;background:#e7eaf0;border-radius:99px;overflow:hidden}
-  .fill{height:100%;width:0;background:linear-gradient(90deg,var(--gold),#e5a900);transition:.35s}
-  .note{text-align:center;color:var(--muted);font-size:14px;margin:12px 0 18px}
+:root{
+  --navy:#071a3d;
+  --blue:#123b7a;
+  --gold:#f4c542;
+  --gold2:#ffd966;
+  --ink:#10213f;
+  --muted:#667085;
+  --red:#b42318;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:linear-gradient(135deg,#061633,#123b7a);
+  color:var(--ink);
+  min-height:100vh;
+}
+
+.wrap{
+  max-width:1100px;
+  margin:auto;
+  padding:24px 16px 48px;
+}
+
+.card{
+  background:#fff;
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 18px 55px rgba(0,0,0,.28);
+}
+
+header{
+  background:linear-gradient(135deg,var(--navy),var(--blue));
+  color:#fff;
+  text-align:center;
+  padding:28px 20px 24px;
+  position:relative;
+}
+
+header:before,
+header:after{
+  content:"★";
+  position:absolute;
+  color:var(--gold);
+  font-size:28px;
+  top:24px;
+}
+
+header:before{left:24px}
+header:after{right:24px}
+
+h1{
+  margin:0;
+  color:var(--gold);
+  font-size:clamp(30px,6vw,52px);
+  letter-spacing:1px;
+}
+
+.sub{
+  font-size:18px;
+  margin:8px 0 0;
+}
+
+.goal{
+  font-weight:800;
+  margin-top:14px;
+  font-size:22px;
+}
+
+.progress-area{
+  padding:22px 24px 10px;
+}
+
+.progress-row{
+  display:flex;
+  justify-content:space-between;
+  font-weight:800;
+  margin-bottom:8px;
+  gap:15px;
+}
+
+.bar{
+  height:20px;
+  background:#e7eaf0;
+  border-radius:99px;
+  overflow:hidden;
+}
+
+.fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,var(--gold),#e5a900);
+  transition:.35s;
+}
+
+.note{
+  text-align:center;
+  color:var(--muted);
+  font-size:14px;
+  margin:12px 0 18px;
+}
+
+.status{
+  text-align:center;
+  font-weight:700;
+  min-height:20px;
+  margin-bottom:10px;
+}
+
+.grid{
+  padding:8px 24px 24px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
+  gap:12px;
+}
+
+.spot{
+  min-height:100px;
+  border:3px solid var(--blue);
+  border-radius:16px;
+  background:#f8fbff;
+  color:var(--blue);
+  font-weight:900;
+  cursor:pointer;
+  transition:.18s;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:10px;
+}
+
+.spot:hover{
+  transform:translateY(-2px);
+  box-shadow:0 8px 18px rgba(7,26,61,.14);
+}
+
+.spot.claimed{
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  border-color:#b98900;
+  color:var(--navy);
+}
+
+.amount{
+  font-size:25px;
+}
+
+.name{
+  font-size:14px;
+  margin-top:5px;
+  max-width:100%;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+
+.paid{
+  font-size:11px;
+  margin-top:3px;
+}
+
+.actions{
+  display:flex;
+  gap:10px;
+  justify-content:center;
+  flex-wrap:wrap;
+  padding:0 24px 26px;
+}
+
+button.action,
+a.action{
+  border:0;
+  border-radius:999px;
+  padding:13px 20px;
+  font-weight:800;
+  text-decoration:none;
+  cursor:pointer;
+  font-size:15px;
+}
+
+.cash{
+  background:#111;
+  color:#fff;
+}
+
+.refresh{
+  background:var(--blue);
+  color:#fff;
+}
+
+.admin{
+  background:#eef1f6;
+  color:var(--ink);
+}
+
+.instructions{
+  margin:0 24px 24px;
+  padding:18px;
+  border-radius:16px;
+  background:#f5f8fc;
+  border-left:6px solid var(--gold);
+  font-size:14px;
+  line-height:1.55;
+}
+
+.footer{
+  text-align:center;
+  color:#fff;
+  font-size:13px;
+  margin-top:14px;
+}
+
+.legend{
+  display:flex;
+  justify-content:center;
+  gap:18px;
+  flex-wrap:wrap;
+  font-size:13px;
+  margin-bottom:8px;
+}
+
+.dot{
+  display:inline-block;
+  width:13px;
+  height:13px;
+  border-radius:4px;
+  vertical-align:-2px;
+  margin-right:5px;
+}
+
+.available{
+  background:#f8fbff;
+  border:2px solid var(--blue);
+}
+
+.taken{
+  background:var(--gold);
+}
+
+.loading{
+  text-align:center;
+  padding:30px;
+  font-weight:800;
+  color:var(--blue);
+}
+
+.error{
+  background:#fff1f0;
+  color:var(--red);
+  margin:15px 24px;
+  padding:15px;
+  border-radius:12px;
+  text-align:center;
+  font-weight:700;
+}
+
+@media(max-width:520px){
+
   .grid{
-    padding:8px 24px 24px;
-    display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;
+    grid-template-columns:repeat(2,1fr);
+    padding-left:14px;
+    padding-right:14px;
   }
-  .spot{
-    min-height:92px;border:3px solid var(--blue);border-radius:16px;
-    background:#f8fbff;color:var(--blue);font-weight:900;
-    cursor:pointer;transition:.18s;position:relative;
-    display:flex;flex-direction:column;align-items:center;justify-content:center;
-    padding:10px;
+
+  .progress-area{
+    padding-left:14px;
+    padding-right:14px;
   }
-  .spot:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(7,26,61,.14)}
-  .spot.claimed{
-    background:linear-gradient(135deg,var(--gold),var(--gold2));
-    border-color:#b98900;color:var(--navy);
-  }
-  .amount{font-size:25px}
-  .name{font-size:14px;margin-top:5px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .paid{font-size:11px;margin-top:3px}
-  .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;padding:0 24px 26px}
-  button.action, a.action{
-    border:0;border-radius:999px;padding:13px 20px;font-weight:800;
-    text-decoration:none;cursor:pointer;font-size:15px;
-  }
-  .cash{background:#111;color:#fff}
-  .reset{background:#eef1f6;color:var(--ink)}
+
   .instructions{
-    margin:0 24px 24px;padding:18px;border-radius:16px;
-    background:#f5f8fc;border-left:6px solid var(--gold);
-    font-size:14px;line-height:1.55;
+    margin-left:14px;
+    margin-right:14px;
   }
-  .footer{text-align:center;color:#fff;font-size:13px;margin-top:14px}
-  .legend{display:flex;justify-content:center;gap:18px;flex-wrap:wrap;font-size:13px;margin-bottom:8px}
-  .dot{display:inline-block;width:13px;height:13px;border-radius:4px;vertical-align:-2px;margin-right:5px}
-  .available{background:#f8fbff;border:2px solid var(--blue)}
-  .taken{background:var(--gold)}
-  @media(max-width:520px){
-    .grid{grid-template-columns:repeat(2,1fr);padding-left:14px;padding-right:14px}
-    .progress-area{padding-left:14px;padding-right:14px}
-    .instructions{margin-left:14px;margin-right:14px}
-    .actions{padding-left:14px;padding-right:14px}
+
+  .actions{
+    padding-left:14px;
+    padding-right:14px;
   }
+
+  .progress-row{
+    font-size:14px;
+  }
+}
 </style>
 </head>
+
 <body>
+
 <div class="wrap">
-  <div class="card">
-    <header>
-      <h1>MUSTANG CHEER</h1>
-      <div class="sub">Help Us Fill the Bow!</div>
-      <div class="goal">🎀 $1,000 FUNDRAISER 🎀</div>
-    </header>
 
-    <div class="progress-area">
-      <div class="progress-row">
-        <span id="raised">$0 raised</span>
-        <span id="remaining">$1,000 remaining</span>
-      </div>
-      <div class="bar"><div class="fill" id="fill"></div></div>
-      <div class="note">Click an open donation amount, enter your name, and that spot will turn gold.</div>
-    </div>
+<div class="card">
 
-    <div class="legend">
-      <span><span class="dot available"></span>Available</span>
-      <span><span class="dot taken"></span>Claimed</span>
-    </div>
+<header>
+<h1>MUSTANG CHEER</h1>
+<div class="sub">Help Us Fill the Bow!</div>
+<div class="goal">🎀 $1,000 FUNDRAISER 🎀</div>
+</header>
 
-    <div class="grid" id="grid"></div>
+<div class="progress-area">
 
-    <div class="actions">
-      <a class="action cash" href="https://cash.app/$Mrskbowers" target="_blank" rel="noopener">💵 Donate on Cash App: $Mrskbowers</a>
-      <button class="action reset" onclick="resetBoard()">Reset Board</button>
-    </div>
-
-    <div class="instructions">
-      <strong>How it works:</strong> Choose any open amount on the bow, enter your name, then use the Cash App button to send your donation.
-      The amount you claim is automatically added to the $1,000 total. Claimed spots are saved on this device/browser.
-      <br><br>
-      <strong>Fundraiser Goal:</strong> $1,000 for the Mustang Cheer Team 💙💛
-    </div>
-  </div>
-  <div class="footer">MUSTANG CHEER • BLUE & GOLD • THANK YOU FOR SUPPORTING OUR TEAM! 💙💛</div>
+<div class="progress-row">
+<span id="raised">$0 paid</span>
+<span id="remaining">$1,000 remaining</span>
 </div>
-<div class="grid" id="grid"></div>
+
+<div class="bar">
+<div class="fill" id="fill"></div>
+</div>
+
+<div class="note">
+Click an available donation amount, enter your name,
+then send your donation through Cash App.
+</div>
+
+<div id="status" class="status"></div>
+
+</div>
+
+<div class="legend">
+<span>
+<span class="dot available"></span>
+Available
+</span>
+
+<span>
+<span class="dot taken"></span>
+Claimed
+</span>
+</div>
+
+<div class="grid" id="grid">
+<div class="loading">Loading fundraiser...</div>
+</div>
+
+<div class="actions">
+
+<a
+class="action cash"
+href="https://cash.app/$Mrskbowers"
+target="_blank"
+rel="noopener">
+💵 Donate on Cash App
+</a>
+
+<button
+class="action refresh"
+onclick="loadFundraiser()">
+🔄 Refresh
+</button>
+
+<button
+class="action admin"
+onclick="adminReset()">
+🔐 Admin Reset
+</button>
+
+</div>
+
+<div class="instructions">
+
+<strong>How it works:</strong>
+
+Choose any available amount on the bow and enter your name.
+Your claim is saved to the Mustang Cheer fundraiser.
+
+<br><br>
+
+After claiming your amount, click the Cash App button to send
+your donation to <strong>$Mrskbowers</strong>.
+
+<br><br>
+
+<strong>Fundraiser Goal:</strong>
+$1,000 for the Mustang Cheer Team 💙💛
+
+</div>
+
+</div>
+
+<div class="footer">
+MUSTANG CHEER • BLUE & GOLD •
+THANK YOU FOR SUPPORTING OUR TEAM! 💙💛
+</div>
+
+</div>
+
+
 <script>
+
+/* =====================================================
+   YOUR NEW GOOGLE APPS SCRIPT WEB APP
+   ===================================================== */
+
+const API_URL =
+"https://script.google.com/macros/s/AKfycby9VKcTaOVHiMlk8QcUrSkOqCmvtj9igo4BwITJCbEaKG_KemNexGd-bYvUQalNAy0b/exec";
+
+
+const GOAL = 1000;
+
+
+/* 46 individual spots = $1,000 */
+
 const amounts = [
   ...Array(10).fill(10),
   ...Array(10).fill(15),
@@ -140,152 +421,460 @@ const amounts = [
   ...Array(3).fill(60)
 ];
 
-const API_URL = "https://script.google.com/macros/s/AKfycbxeoahLoHztaGKIEE9LmQAp6ag4V0X0AE8CaYb-2ppcdDINSNf1rqlhYLml3cCG8IDF/exec";
 
-const GOAL = 1000;
+let claims = {};
 
-let claims = JSON.parse(
-  localStorage.getItem("mustangCheerClaims") || "{}"
-);
 
-function render() {
-  const grid = document.getElementById("grid");
+/* =====================================================
+   LOAD DATA FROM GOOGLE SHEETS
+   ===================================================== */
 
-  if (!grid) return;
+async function loadFundraiser(){
+
+  const grid =
+    document.getElementById("grid");
+
+  const status =
+    document.getElementById("status");
+
+  grid.innerHTML =
+    '<div class="loading">Loading fundraiser...</div>';
+
+  status.textContent = "";
+
+  try{
+
+    const response =
+      await fetch(
+        API_URL + "?t=" + Date.now()
+      );
+
+    if(!response.ok){
+      throw new Error("Unable to connect.");
+    }
+
+    const data =
+      await response.json();
+
+    if(!data.success){
+      throw new Error(
+        data.error ||
+        "Unable to load fundraiser."
+      );
+    }
+
+    claims =
+      data.claims || {};
+
+    renderBoard();
+
+  }catch(error){
+
+    console.error(error);
+
+    grid.innerHTML = `
+      <div class="error">
+        Unable to load the fundraiser.
+        <br><br>
+        Please refresh the page.
+      </div>
+    `;
+
+  }
+
+}
+
+
+/* =====================================================
+   DRAW THE 46 MONEY SPOTS
+   ===================================================== */
+
+function renderBoard(){
+
+  const grid =
+    document.getElementById("grid");
 
   grid.innerHTML = "";
 
-  amounts.forEach((amt, i) => {
-    const claim = claims[i];
+  amounts.forEach(
+    (amount,index)=>{
 
-    const b = document.createElement("button");
+      const spotId =
+        "spot-" + (index + 1);
 
-    b.className = "spot" + (claim ? " claimed" : "");
+      const claim =
+        claims[spotId];
 
-    b.type = "button";
+      const button =
+        document.createElement("button");
 
-    b.innerHTML = `
-      <div class="amount">$${amt}</div>
-      <div class="name">
-        ${claim ? escapeHtml(claim) : "Click to claim"}
-      </div>
-      ${
-        claim
-          ? '<div class="paid">CLAIMED ✓</div>'
-          : '<div class="paid">OPEN</div>'
+      button.type = "button";
+
+      button.className =
+        "spot" +
+        (claim ? " claimed" : "");
+
+      if(claim){
+
+        const status =
+          String(
+            claim.status || "pending"
+          ).toLowerCase();
+
+        button.innerHTML = `
+
+          <div class="amount">
+            $${amount}
+          </div>
+
+          <div class="name">
+            ${escapeHtml(claim.name)}
+          </div>
+
+          <div class="paid">
+            ${status === "paid"
+              ? "PAID ✓"
+              : "CLAIMED"}
+          </div>
+
+        `;
+
+      }else{
+
+        button.innerHTML = `
+
+          <div class="amount">
+            $${amount}
+          </div>
+
+          <div class="name">
+            Click to claim
+          </div>
+
+          <div class="paid">
+            OPEN
+          </div>
+
+        `;
+
+        button.onclick =
+          () => claimSpot(
+            spotId,
+            amount
+          );
+
       }
-    `;
 
-    b.onclick = () => claimSpot(i, amt);
+      grid.appendChild(button);
 
-    grid.appendChild(b);
-  });
-
-  updateTotal();
-}
-
-function updateTotal() {
-  let raised = 0;
-
-  amounts.forEach((amt, i) => {
-    if (claims[i]) {
-      raised += amt;
     }
-  });
-
-  const remaining = Math.max(GOAL - raised, 0);
-
-  document.getElementById("raised").textContent =
-    `$${raised.toLocaleString()} raised`;
-
-  document.getElementById("remaining").textContent =
-    `$${remaining.toLocaleString()} remaining`;
-}
-
-function claimSpot(i, amt) {
-
-  if (claims[i]) {
-
-    if (
-      confirm(
-        `This $${amt} spot is claimed by ${claims[i]}. Remove it?`
-      )
-    ) {
-      delete claims[i];
-      save();
-    }
-
-    return;
-  }
-
-  const name = prompt(
-    `You selected a $${amt} donation. Enter your name:`
   );
 
-  if (name && name.trim()) {
+  updateTotal();
 
-    claims[i] = name.trim();
+}
 
-    save();
 
-    const go = confirm(
-      `Thank you, ${name.trim()}! Click OK to open Cash App and send $${amt} to $Mrskbowers.`
+/* =====================================================
+   ONLY PAID DONATIONS COUNT TOWARD TOTAL
+   ===================================================== */
+
+function updateTotal(){
+
+  let paidTotal = 0;
+
+  Object.values(claims).forEach(
+    claim => {
+
+      if(
+        String(
+          claim.status || ""
+        ).toLowerCase()
+        === "paid"
+      ){
+
+        paidTotal +=
+          Number(claim.amount) || 0;
+
+      }
+
+    }
+  );
+
+  const remaining =
+    Math.max(
+      GOAL - paidTotal,
+      0
     );
 
-    if (go) {
+  const percent =
+    Math.min(
+      (paidTotal / GOAL) * 100,
+      100
+    );
+
+  document.getElementById(
+    "raised"
+  ).textContent =
+    `$${paidTotal.toLocaleString()} paid`;
+
+  document.getElementById(
+    "remaining"
+  ).textContent =
+    `$${remaining.toLocaleString()} remaining`;
+
+  document.getElementById(
+    "fill"
+  ).style.width =
+    percent + "%";
+
+}
+
+
+/* =====================================================
+   CLAIM A SPOT
+   ===================================================== */
+
+async function claimSpot(
+  spotId,
+  amount
+){
+
+  const name =
+    prompt(
+      `You selected a $${amount} donation.\n\nEnter your name:`
+    );
+
+  if(
+    !name ||
+    !name.trim()
+  ){
+
+    return;
+
+  }
+
+  const cleanName =
+    name.trim();
+
+  const status =
+    document.getElementById("status");
+
+  status.textContent =
+    "Saving your donation spot...";
+
+
+  try{
+
+    const response =
+      await fetch(
+        API_URL,
+        {
+
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "text/plain;charset=utf-8"
+          },
+
+          body:JSON.stringify({
+
+            name:
+              cleanName,
+
+            amount:
+              amount,
+
+            spotId:
+              spotId
+
+          })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if(!data.success){
+
+      throw new Error(
+        data.error ||
+        "Unable to claim this spot."
+      );
+
+    }
+
+
+    await loadFundraiser();
+
+
+    const openCashApp =
+      confirm(
+        `Thank you, ${cleanName}!\n\n` +
+        `Your $${amount} spot has been claimed.\n\n` +
+        `Click OK to open Cash App and send $${amount} to $Mrskbowers.`
+      );
+
+
+    if(openCashApp){
+
       window.open(
         "https://cash.app/$Mrskbowers",
         "_blank"
       );
+
     }
-  }
-}
 
-function save() {
+  }catch(error){
 
-  localStorage.setItem(
-    "mustangCheerClaims",
-    JSON.stringify(claims)
-  );
+    console.error(error);
 
-  render();
-}
+    status.textContent = "";
 
-function resetBoard() {
-
-  if (
-    confirm(
-      "Reset all claimed spots on this device?"
-    )
-  ) {
-
-    claims = {};
-
-    localStorage.removeItem(
-      "mustangCheerClaims"
+    alert(
+      error.message ||
+      "There was a problem claiming this spot."
     );
 
-    render();
   }
+
 }
 
-function escapeHtml(s) {
 
-  return String(s).replace(
-    /[&<>"']/g,
-    function(m) {
-      return {
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#039;"
-      }[m];
+/* =====================================================
+   ADMIN RESET
+   ===================================================== */
+
+async function adminReset(){
+
+  const password =
+    prompt(
+      "ADMIN ONLY\n\nEnter your administrator password:"
+    );
+
+  if(!password){
+
+    return;
+
+  }
+
+
+  const confirmReset =
+    confirm(
+      "WARNING:\n\n" +
+      "This will remove ALL fundraiser claims " +
+      "from the Google Sheet.\n\n" +
+      "Are you sure you want to continue?"
+    );
+
+
+  if(!confirmReset){
+
+    return;
+
+  }
+
+
+  try{
+
+    const response =
+      await fetch(
+        API_URL,
+        {
+
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "text/plain;charset=utf-8"
+          },
+
+          body:JSON.stringify({
+
+            action:
+              "reset",
+
+            password:
+              password
+
+          })
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if(!data.success){
+
+      throw new Error(
+        data.error ||
+        "Reset failed."
+      );
+
     }
-  );
+
+
+    alert(
+      "The fundraiser has been reset."
+    );
+
+
+    await loadFundraiser();
+
+
+  }catch(error){
+
+    alert(
+      error.message ||
+      "Unable to reset fundraiser."
+    );
+
+  }
+
 }
 
-render();
+
+/* =====================================================
+   SECURITY
+   ===================================================== */
+
+function escapeHtml(value){
+
+  return String(value)
+    .replace(
+      /[&<>"']/g,
+      function(character){
+
+        return {
+
+          "&":"&amp;",
+          "<":"&lt;",
+          ">":"&gt;",
+          '"':"&quot;",
+          "'":"&#039;"
+
+        }[character];
+
+      }
+    );
+
+}
+
+
+/* =====================================================
+   START
+   ===================================================== */
+
+loadFundraiser();
+
 </script>
+
 </body>
 </html>
